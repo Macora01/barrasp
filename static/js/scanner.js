@@ -1,4 +1,3 @@
-let html5QrcodeScanner = null;
 let lastDecodedText = null;
 let scanCount = 0;
 
@@ -20,15 +19,15 @@ function onScanSuccess(decodedText, decodedResult) {
 }
 
 function onScanFailure(error) {
-  // ignoramos errores de lectura
+  // se ignoran errores de lectura
 }
 
 function startScanner() {
-  const formats = Html5QrcodeSupportedFormats; // viene de la librería
+  const formats = Html5QrcodeSupportedFormats;
 
   const config = {
     fps: 10,
-    qrbox: { width: 350, height: 140 }, // rectángulo para barras
+    qrbox: { width: 350, height: 140 },
     formatsToSupport: [
       formats.CODE_128,
       formats.CODE_39,
@@ -43,19 +42,21 @@ function startScanner() {
     showTorchButtonIfSupported: true
   };
 
-  html5QrcodeScanner = new Html5Qrcode("qr-reader");
+  const scannerConfig = {
+    rememberLastUsedCamera: true,
+    supportedScanTypes: [Html5QrcodeScanType.SCAN_TYPE_CAMERA]
+  };
 
-  html5QrcodeScanner
-    .start(
-      { facingMode: "environment" },
-      config,
-      onScanSuccess,
-      onScanFailure
-    )
-    .catch(err => {
-      console.error("Error al iniciar cámara:", err);
-      alert("Error al acceder a la cámara o al iniciar el lector.");
-    });
+  const html5QrcodeScanner = new Html5QrcodeScanner(
+    "qr-reader",
+    Object.assign(config, scannerConfig),
+    false
+  );
+
+  html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+
+  // Guardamos referencia global para poder apagarlo al finalizar
+  window._html5Scanner = html5QrcodeScanner;
 }
 
 async function sendScan(code) {
@@ -101,14 +102,12 @@ cancelFinishBtn.addEventListener("click", () => {
 
 confirmFinishBtn.addEventListener("click", () => {
   modalEl.classList.add("hidden");
-  if (html5QrcodeScanner) {
-    html5QrcodeScanner.stop().catch(err => console.error(err));
+  if (window._html5Scanner) {
+    window._html5Scanner.clear().catch(err => console.error(err));
   }
   nextBtn.disabled = true;
   finishBtn.disabled = true;
   alert("Sesión finalizada. Puedes recargar la página para iniciar una nueva sesión.");
 });
 
-document.addEventListener("DOMContentLoaded", () => {
-  startScanner();
-});
+document.addEventListener("DOMContentLoaded", startScanner);
