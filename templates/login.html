@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Identificación - Barrasp{% endblock %}
+
+{% block content %}
+<div class="card card-centered">
+  <h1>Identifícate</h1>
+  <p class="text-muted">Ingresa tu correo. Se usará para asociar tus lecturas.</p>
+
+  {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+  {% endif %}
+
+  <form method="post" class="form-vertical">
+    <label for="email">Correo electrónico</label>
+    <input
+      type="email"
+      id="email"
+      name="email"
+      value="{{ email or '' }}"
+      required
+      autocomplete="email"
+      placeholder="tucorreo@ejemplo.com"
+    >
+    <button type="submit" class="btn btn-primary">Continuar</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Lector de Códigos - Barrasp{% endblock %}
+
+{% block content %}
+<div class="scanner-layout">
+  <section class="scanner-panel">
+    <h1>Lector de códigos</h1>
+    <p class="text-muted">
+      Coloca el código de barras frente a la cámara y espera a que se lea correctamente.
+    </p>
+
+    <div id="scanner-container" class="scanner-container">
+      <div id="qr-reader" class="qr-reader"></div>
+    </div>
+
+    <div class="current-code-panel">
+      <div class="label">Código actual</div>
+      <div id="current-code" class="current-code">—</div>
+    </div>
+
+    <div class="counter-panel">
+      <span>Lecturas válidas:</span>
+      <span id="scan-count" class="counter-value">0</span>
+    </div>
+
+    <div class="button-row">
+      <button id="next-btn" class="btn btn-primary" type="button" disabled>Próximo</button>
+      <button id="finish-btn" class="btn btn-danger" type="button" disabled>Finalizar</button>
+    </div>
+
+    <div class="session-info">
+      <span class="text-muted">Archivo de sesión:</span>
+      <span class="badge">{{ session_filename }}</span>
+    </div>
+  </section>
+</div>
+
+<div id="finish-modal" class="modal hidden">
+  <div class="modal-content">
+    <h2>Finalizar sesión</h2>
+    <p>¿Seguro que quieres finalizar esta sesión de lectura?</p>
+    <div class="button-row">
+      <button id="cancel-finish" class="btn btn-outline" type="button">Cancelar</button>
+      <button id="confirm-finish" class="btn btn-danger" type="button">Sí, finalizar</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+<script>
+  const ADD_SCAN_URL = "{{ url_for('add_scan') }}";
+</script>
+<script src="{{ url_for('static', filename='js/scanner.js') }}"></script>
+{% endblock %}
