@@ -27,12 +27,23 @@ function onScanFailure(error) {
 function startScanner() {
   const config = {
     fps: 10,
-    qrbox: 250
+    qrbox: { width: 320, height: 120 }, // caja rectangular para código de barras
+    formatsToSupport: [
+      Html5QrcodeSupportedFormats.EAN_13,
+      Html5QrcodeSupportedFormats.EAN_8,
+      Html5QrcodeSupportedFormats.UPC_A,
+      Html5QrcodeSupportedFormats.UPC_E,
+      Html5QrcodeSupportedFormats.CODE_128,
+      Html5QrcodeSupportedFormats.CODE_39
+    ],
+    experimentalFeatures: {
+      useBarCodeDetectorIfSupported: true
+    },
+    showTorchButtonIfSupported: true
   };
 
   html5QrcodeScanner = new Html5Qrcode("qr-reader");
 
-  // iOS / Safari necesita que esto se dispare por un gesto de usuario
   html5QrcodeScanner
     .start(
       { facingMode: "environment" },
@@ -45,7 +56,6 @@ function startScanner() {
       alert("Error al acceder a la cámara. Asegúrate de haber dado permiso y estar en HTTPS o localhost.");
     });
 }
-
 async function sendScan(code) {
   const res = await fetch(ADD_SCAN_URL, {
     method: "POST",
