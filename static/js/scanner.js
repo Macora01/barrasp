@@ -11,9 +11,8 @@ const cancelFinishBtn = document.getElementById("cancel-finish");
 const confirmFinishBtn = document.getElementById("confirm-finish");
 
 function onScanSuccess(decodedText, decodedResult) {
-  if (decodedText === lastDecodedText) {
-    return;
-  }
+  if (decodedText === lastDecodedText) return;
+
   lastDecodedText = decodedText;
   currentCodeEl.textContent = decodedText;
   nextBtn.disabled = false;
@@ -21,20 +20,22 @@ function onScanSuccess(decodedText, decodedResult) {
 }
 
 function onScanFailure(error) {
-  // errores de lectura, se ignoran
+  // ignoramos errores de lectura
 }
 
 function startScanner() {
+  const formats = Html5QrcodeSupportedFormats; // viene de la librería
+
   const config = {
     fps: 10,
-    qrbox: { width: 320, height: 120 }, // caja rectangular para código de barras
+    qrbox: { width: 350, height: 140 }, // rectángulo para barras
     formatsToSupport: [
-      Html5QrcodeSupportedFormats.EAN_13,
-      Html5QrcodeSupportedFormats.EAN_8,
-      Html5QrcodeSupportedFormats.UPC_A,
-      Html5QrcodeSupportedFormats.UPC_E,
-      Html5QrcodeSupportedFormats.CODE_128,
-      Html5QrcodeSupportedFormats.CODE_39
+      formats.CODE_128,
+      formats.CODE_39,
+      formats.EAN_13,
+      formats.EAN_8,
+      formats.UPC_A,
+      formats.UPC_E
     ],
     experimentalFeatures: {
       useBarCodeDetectorIfSupported: true
@@ -53,21 +54,19 @@ function startScanner() {
     )
     .catch(err => {
       console.error("Error al iniciar cámara:", err);
-      alert("Error al acceder a la cámara. Asegúrate de haber dado permiso y estar en HTTPS o localhost.");
+      alert("Error al acceder a la cámara o al iniciar el lector.");
     });
 }
+
 async function sendScan(code) {
   const res = await fetch(ADD_SCAN_URL, {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ code })
   });
   if (!res.ok) {
     const data = await res.json().catch(() => ({}));
-    const msg = data.error || "Error al guardar la lectura.";
-    alert(msg);
+    alert(data.error || "Error al guardar la lectura.");
     return false;
   }
   return true;
@@ -110,9 +109,6 @@ confirmFinishBtn.addEventListener("click", () => {
   alert("Sesión finalizada. Puedes recargar la página para iniciar una nueva sesión.");
 });
 
-// IMPORTANTE: Safari/iOS suele exigir que esto se ejecute tras un gesto.
-// Para desarrollo en PC se lanza directo al cargar:
 document.addEventListener("DOMContentLoaded", () => {
   startScanner();
 });
-// Muy importante todo
