@@ -105,4 +105,4 @@ confirmFinishBtn.addEventListener("click", () => {
 document.addEventListener("DOMContentLoaded", () => {
   startScanner();
 });
-
+// Muy importante todo
